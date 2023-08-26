@@ -4,6 +4,22 @@ const fs = require('fs');
 
 const filepath = "./data/words.json";
 
+const multer  = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../public/images'))
+    },
+
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
+
+
 function getword(selectedid) {
     const words = fs.readFileSync(filepath);
     const wordsList = JSON.parse(words);
@@ -41,19 +57,21 @@ router
     .get((req, res) => {
         return res.json(getWordsList ())
     })
-    .post ((req, res) => {
+    .post (upload.single('image'), (req, res) => {
 
-        if (!req.body.name || !req.body.image) {
+        if (!req.body.word || !req.file.filename) {
             return res.status(400).json({
                 error: `Missing required fields`
             })
         }
 
+        const image_url = 'http://localhost:8080/images/' + String(req.file.filename);
+
         listOfWords = getWordsList();
         const newword = {
             id : (listOfWords.length),
-            name : req.body.name,
-            image : req.body.image
+            name : req.body.word,
+            image : image_url
         }
 
 
