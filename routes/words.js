@@ -65,7 +65,7 @@ router
             })
         }
 
-        const image_url = 'http://localhost:8080/images/' + String(req.file.filename);
+        const image_url = 'https://hangman-images-f201200758b8.herokuapp.com/images/' + String(req.file.filename);
 
         listOfWords = getWordsList();
         const newword = {
